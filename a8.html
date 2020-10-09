@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Demo</title>
+
+	<style type="text/css">
+		canvas
+		{
+			border:1px solid black;
+            background-color: black;
+		}
+	</style>
+
+</head>
+<body>
+
+<canvas id="demoCanvas" width="1024" height="768">Your browser does not support canvas</canvas>
+
+<script type="text/javascript">
+
+	window.onload = function()
+	{
+        alert("Click on the canvas to draw a ball. The more balls you create, the more fun it gets")
+		var canvas = document.getElementById("demoCanvas");
+		var ctx = canvas.getContext("2d");
+		
+		
+        var Dot = function(x,y){
+            this.x = x;
+            this.y = y
+            this.dx=(Math.random() * 5 + 10) * (Math.floor(Math.random() * 2) || -1);   // set random initial movement
+            this.dy=(Math.random() * 5 + 10) * (Math.floor(Math.random() * 2) || -1);
+            this.radius = 1+ Math.random()*20+5; // set random inicial size
+            this.color= '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6); //set random color
+            this.render = function(){
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
+                ctx.closePath();
+                ctx.fill();
+            }
+            this.move = function(){
+                
+                // collision with the edges
+                if(this.x - this.radius <= 0 || this.x + this.radius >= canvas.width)
+                    this.dx=-this.dx;
+                if(this.y - this.radius <=0 || this.y + this.radius >= canvas.height)
+                    this.dy=-this.dy;
+                
+                this.x +=this.dx;
+                this.y += this.dy;
+            }
+        }
+
+        //time tracking
+		//let t = 0;
+
+        //animation length (in frames)
+        //let animationLength = 500; 
+
+
+        var dots = [];
+        
+        
+        window.addEventListener('click', handleMouseClick);
+        function handleMouseClick (event){     // the function has to be declared this way
+            var canvasRect = canvas.getBoundingClientRect();
+            var mouseX = event.clientX - canvasRect.left;
+            var mouseY = event.clientY - canvasRect.top;
+            var d = new Dot(mouseX, mouseY);
+            dots.push(d);
+            
+        }
+      
+
+		main();
+
+		function main()
+		{
+			startGame();
+		}
+
+		function startGame()
+		{
+			updateGame();
+			window.requestAnimationFrame(drawGame);
+		}
+
+		function updateGame()
+		{
+                          
+                for(var i = 0; i<dots.length; i++){
+                    dots[i].move();
+                    
+                    // I tried to detect collision with eachother too but it's glitchy and i couldn't fix it in time
+                    //
+                    // for(var j = i+1; j<dots.length; j++){
+                    // // compare dots[i] with dots[j]
+                    //     var distance = Math.sqrt(Math.pow(dots[i].x-dots[j].x ,2)+Math.pow( dots[i].y-dots[j].y,2));
+                    //     //check for collision
+                    //     if(distance<= dots[i].radius + dots[j].radius){
+                    //         //handle collision
+                    //         dots[i].x *= -1;
+                    //         dots[j].x *= -1;
+                    //     }
+                    // }
+                    
+                }
+     
+			window.setTimeout(updateGame, 42);
+		}
+
+		function drawGame()
+		{
+			// RENDERING HAPPENS HERE
+			ctx.clearRect(0,0,canvas.width,canvas.height);		// clearing the previous frames
+
+            dots.forEach(function(dot){
+                dot.render();
+            });           
+
+			window.requestAnimationFrame(drawGame);
+		}
+	}
+
+</script>
+
+</body>
+</html>
