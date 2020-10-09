@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Frame Animation</title>
+
+	<style type="text/css">
+		canvas
+		{
+			border:1px solid black;
+		}
+	</style>
+
+</head>
+<body>
+
+	<canvas id="demoCanvas" width="1024" height="768"> Your browser does not support canvas</canvas>
+
+	<script type="text/javascript">
+        const X = 0;            //declaring constants
+        const Y = 0;
+        const WIDTH = 1024;
+        const HEIGHT = 768;
+		window.onload = function()
+		{
+			var canvas = document.getElementById("demoCanvas");
+            var ctx = canvas.getContext("2d");
+
+            var mountain = function (){
+                ctx.fillStyle = "green";   // color of the mountains
+                ctx.lineWidth = 2 ; // line width
+
+                // mountain on the left:
+                ctx.beginPath(); 
+                ctx.moveTo(X-350,HEIGHT); 
+                ctx.bezierCurveTo(50,350,400,500, WIDTH-400,HEIGHT) 
+                ctx.closePath(); 
+                ctx.fill();
+                
+                // mountain on the right:
+                ctx.beginPath(); 
+                ctx.moveTo(WIDTH+350,HEIGHT); 
+                ctx.bezierCurveTo(WIDTH-50,HEIGHT-350,624,368, WIDTH-700,HEIGHT); 
+                ctx.closePath();
+                ctx.fill();
+               
+            }
+            // sky (canvas background):
+            var sky = function (){
+                ctx.fillStyle = "blue";
+                ctx.fillRect(X, Y, WIDTH, HEIGHT);
+            }
+            
+            // sun
+            var sun = function (){
+                //inside part:
+                ctx.beginPath();
+                ctx.fillStyle = "orange";
+                ctx.arc(400,100,80, 0, 2*Math.PI);
+                ctx.fill();
+                ctx.closePath();
+                //outside part:
+                ctx.beginPath();
+                ctx.fillStyle = "yellow";   
+                ctx.arc(400,100,60, 0, 2*Math.PI);
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            //flower body calling petal methods:
+            var flower = function (){
+                //stem:
+                ctx.strokeStyle = "darkgreen";
+                ctx.lineWidth = 7;
+                ctx.beginPath(); // start a new curve path
+                ctx.moveTo(X+200,Y+410); // placing the pen on the canvas
+                ctx.lineTo(X+200,Y+510);
+                ctx.stroke();
+                ctx.closePath();
+
+                //petals:
+                petals(150, 200, 250, 200);  // petal on the middle top
+                petals(150, 470, 250, 470); // petal on the middle bottom
+                petals(80, 200, 80, 320); // petal on the upper left
+                petals(80, 350, 80, 470); //petal on the bottom left
+                petals(330, 200, 330, 320); // petal on the upper right
+                petals(330, 350, 330, 470);   //pettal in the top right
+
+                //pistil:
+                ctx.beginPath();
+                ctx.fillStyle = "yellow";
+                ctx.arc(X+200,Y+330,13, 0, 2*Math.PI);
+                ctx.fill();
+                ctx.closePath();
+            }
+            //petal function (the center is always the same in this case, so I tried constructing the curves separately this way. Conclusion: the other way is easier)
+            var petals = function (x1, y1, x2, y2) {
+                ctx.beginPath();
+                ctx.moveTo(X+200,Y+330);
+                ctx.fillStyle = "pink";
+                ctx.strokeStyle = "#FF66FF"
+                ctx.bezierCurveTo(X+x1,Y+y1, X+x2,Y+y2, X+200,Y+330);
+                ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+
+            }
+
+            // clouds (curves start from the left one going anti-clockwise)
+
+            var clouds = function(){
+                ctx.fillStyle = "lightblue";   
+                ctx.strokeStyle = "#3399FF";    
+                ctx.lineWidth = 3 ; 
+                ctx.beginPath(); 
+                ctx.moveTo(600, 100); 
+                ctx.bezierCurveTo(500,10,450,300, 600, 210)
+                ctx.bezierCurveTo(600,300,750,300, 750, 200)
+                ctx.bezierCurveTo(750,300,900,300, 900, 200)
+                ctx.bezierCurveTo(1000,250,1000, 50, 900, 100)
+                ctx.bezierCurveTo(900,10,750,10,750,100) // cp1x, cp1y, cp2x, cp2y, anchorp2x, anchorp2y
+                ctx.bezierCurveTo(750,10,600,10, 600, 100)
+                ctx.closePath(); 
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            sky();
+            mountain();
+            sun();
+            flower();
+            clouds();
+        }
+
+	</script>
+
+</body>
+</html>
